@@ -1,39 +1,36 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { Stack, useRouter, useSegments } from "expo-router";
+import { Slot } from "expo-router";
+import "../global.css";
+import {AuthContextProvider, useAuth} from '../Context/authContext'
+import { useEffect } from "react";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+const MainLayout =()=>{
+  const {isAuthenticated} = useAuth()
+  const segment = useSegments()
+  const router = useRouter();
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+  useEffect(()=>{
+    //check auth
+    if(typeof isAuthenticated == 'undefined') return;
+    const inApp = segment[0]=='(app)';
+    if(isAuthenticated && !inApp){
+      //redirect to home
+      router.replace('/Home')
+    } else if(isAuthenticated == false){
+      //redirect to login
+      router.replace('/Login')
     }
-  }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+  },[isAuthenticated])
 
+  return <Slot />
+}
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <AuthContextProvider>
+      <MainLayout/>
+    </AuthContextProvider>
   );
 }
