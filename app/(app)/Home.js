@@ -6,18 +6,24 @@ import React from "react";
 import { StatusBar } from "expo-status-bar";
 import ChatList from '../../components/ChatList'
 import '../../global.css'
+import { query, where,getDocs } from "firebase/firestore";
+import { usersRef } from "../../firebaseConfig";
 
 export default function Home() {
 
-  const {Logout, user} = useAuth();
-  const [users, setUsers] = useState([1,2,3])
-
-  const handleLogout = async ()=>{
-    await Logout();
-  }
+  const {user} = useAuth();
+  const [users, setUsers] = useState([])
 
   const getUsers = async()=>{
-    //fetch users
+    const q = query(usersRef,where('userId','!=',user?.uid));
+    const querySnapshot = await getDocs(q);
+    let data=[];
+
+    querySnapshot.forEach((doc)=>{
+      data.push({...doc.data()})
+    })
+
+    setUsers(data)
   }
 
   useEffect(()=>{
@@ -25,19 +31,17 @@ export default function Home() {
       getUsers()
   },[])
   return (
-    <View>
+    <View className="flex-1">
       <StatusBar style="light" />
       {
         users.length>0 ?(
-          <ChatList users={users}/>
+          <ChatList users={users} currentUser={user}/>
         ):(
           <View classname="flex justify-center" style={{top:  hp(30)}}>
             <ActivityIndicator size="large"/>
           </View>
         )
       }
-      <Button title="Logout" onPress={handleLogout}/>
-      <Text classname="text-emerald-500">HOme</Text>
     </View>
   );
 }

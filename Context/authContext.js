@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createContext } from "react";
 import {onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from 'firebase/auth'
 import {auth, db} from '../firebaseConfig'
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 
 
 export const AuthContext = createContext()
@@ -29,10 +29,13 @@ export const AuthContextProvider =({children}) =>{
 
     const updateUserData = async(userId)=>{
         const docRef = doc(db, 'users', userId);
+        console.log(userId);
         const docSnap = await getDoc(docRef);
         if(docSnap.exists()){
             let data = docSnap.data();
-            setUser({...user, username: data.username, userId: data.userId, email:data.email})
+            setUser({...user, username: data.username, userId: data.userId, email:data.email,profilePic:data.profilePic})
+        } else {
+            console.log("No such document!");
         }
     }
 
@@ -46,13 +49,14 @@ export const AuthContextProvider =({children}) =>{
         }
     }
 
-    const Register = async(email,password,username) =>{
+    const Register = async(email,password,username,profilePic) =>{
         try {
             const response = await createUserWithEmailAndPassword(auth,email,password);
             await setDoc(doc(db,"users",response?.user?.uid),{
                 username,
                 email,
-                userId:response?.user?.uid
+                profilePic,
+                userId: response?.user?.uid
             })
             return {success: true,data: response?.user}
         } catch (e) {
@@ -61,17 +65,40 @@ export const AuthContextProvider =({children}) =>{
         }
     }
 
+    const UpdateImage = async(profilePic,userId) =>{
+        try {
+            const docRef = doc(db, 'users', userId);
+            const docSnap = await getDoc(docRef);
+            const data = docSnap.data();
+            const pic = data.profilePic;
+
+            await updateDoc(docRef,{
+                "profilePic": profilePic
+            })
+
+            console.log("Document successfully updated!")
+            updateUserData(userId)
+            return {success: true,value}
+            
+        } catch (e) {
+            let msg = e.message;
+            return{success: false, msg };
+        }
+
+    }
+
     const Logout = async() =>{
         try {
             await signOut(auth)
             return {success:true}
+
         } catch (error) {
             return {success: false, msg: error.message, error:error}
         }
     }
 
     return(
-        <AuthContext.Provider value={{user, isAuthenticated, Login, Logout, Register}}>
+        <AuthContext.Provider value={{user, isAuthenticated, Login, Logout, Register, UpdateImage}}>
             {children}
         </AuthContext.Provider>
     )

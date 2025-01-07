@@ -32,8 +32,7 @@ export default function Login() {
   
   return (
     <SafeAreaView className=" flex-1 bg-neutral-100 justify-center p-4">
-      <Text className="text-center text-3xl my-4 ">Login</Text>
-      <ChatList />
+      <Text className="text-center my-4 " style={{fontSize: hp(5)}}>Login</Text>
       <TextInput className="bg-white border-2 rounded-2xl p-3 m-2 text-lg" placeholder="Email" onChangeText={(value)=>emailRef.current = value}/>
       <TextInput className="bg-white border-2 rounded-2xl p-3 m-2 text-lg" placeholder="Password" onChangeText={(value)=>passwordRef.current= value} secureTextEntry/>
       {
@@ -50,7 +49,6 @@ export default function Login() {
         </Pressable>
       </View>
       
-
     </SafeAreaView>
   );
 }
