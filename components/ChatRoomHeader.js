@@ -22,7 +22,7 @@ export default function ChatRoomHeader({user, router}){
             options={{
                 title:"",
                 headerLeft:()=>(
-                    <View className="flex-row items-center gap-6">
+                    <View className="flex-row items-center gap-6 py-1">
                         <TouchableOpacity onPress={()=>{router.back()}}>
                             <Ionicons name="chevron-back" size={30} color="grey" />
                         </TouchableOpacity>
@@ -33,7 +33,7 @@ export default function ChatRoomHeader({user, router}){
                     </View>
                 ),
                 headerRight:()=>(
-                    <View className="flex-row items-center gap-10 mr-6">
+                    <View className="flex-row items-center gap-10 mr-6 py-1">
                         <TouchableOpacity>
                             <Ionicons name="call" size={25} color="grey" />
                         </TouchableOpacity>

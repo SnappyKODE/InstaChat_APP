@@ -15,7 +15,7 @@ const MainLayout =()=>{
     if(isAuthenticated && !inApp){
       router.replace('/Home')
     } else if(isAuthenticated == false){
-      router.replace('/Login')
+      router.replace('/Welcome')
     }
 
   },[isAuthenticated])
@@ -24,8 +24,11 @@ const MainLayout =()=>{
 }
 export default function RootLayout() {
   return (
-    <AuthContextProvider>
-      <MainLayout/>
-    </AuthContextProvider>
+
+      <AuthContextProvider>
+        <MainLayout/>
+      </AuthContextProvider>
+
+    
   );
 }

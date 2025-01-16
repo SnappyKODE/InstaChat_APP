@@ -13,6 +13,8 @@ import {
 } from '@react-navigation/native';
 import { useState } from "react";
 import { useRouter } from "expo-router";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
 
 const ios = Platform.OS == 'ios';
 
@@ -29,11 +31,11 @@ export default function CustomHHeader(){
     };
 
     return (
-        <View className="bg-emerald-600 rounded-b-2xl pb-4 px-4 pt-2 flex-row justify-between" style={{paddingTop: ios ? top : top+10}}>
-            <Text className="text-white text-2xl text-center ">InstaChat </Text>
+        <View className="bg-emerald-700 rounded-b-3xl pb-4 px-4 pt-2 flex-row justify-between" style={{paddingTop: ios ? top : top+10, height: hp(11.5)}}>
+            <Text className="text-white text-3xl text-center font-semibold ">InstaChat </Text>
             <Menu opened={visible} onBackdropPress={()=>setVisible(false)}>
                 <MenuTrigger onPress={()=>setVisible(true)}>
-                    <Ionicons name="ellipsis-vertical" size={24} color="white" />
+                    <Ionicons name="ellipsis-vertical" size={25} color="white" />
                 </MenuTrigger>
                 <MenuOptions customStyles={{optionsContainer:{backgroundColor: 'white', width: 200, borderRadius: 10,marginTop:32}}} visible={visible}  onBackdropPress={()=>setVisible(false)}>
                     <MenuOption>

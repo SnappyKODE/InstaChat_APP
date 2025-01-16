@@ -7,6 +7,8 @@ import { useState } from 'react';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { AdvancedImage} from 'cloudinary-react-native';
 import { Cloudinary } from "@cloudinary/url-gen";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
 
 const cld = new Cloudinary({
   cloud: {
@@ -90,28 +92,41 @@ export default function Profile ({users}){
   }
 
     return (
-      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
-        <View className=" bg-white rounded-3xl elevation-md m-5 justify-center items-center p-5" >
-          <Text className=" text-center text-3xl p-3">Profile </Text>
+      <ScrollView className='bg-white' refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
+        <View className=" bg-white justify-center items-center" >
+
           
-          <View>
-            <AdvancedImage cldImg={myImage}  style={{width: 80, height: 80, borderRadius: 50}}/>
-            <TouchableOpacity className="bg-white p-1 rounded-xl top-14 left-14 absolute elevation-md" onPress={pickImage}>
-              <Feather  name="edit" size={20} color="black" />
+          <View className='p-10 '>
+            <AdvancedImage cldImg={myImage}  style={{width: hp(20), height: hp(20), borderRadius: 100}}/>
+            <TouchableOpacity className="bg-emerald-500 p-4 rounded-full top-44 left-44 absolute elevation-md" onPress={pickImage}>
+              <Feather  name="edit" size={22} color="white" />
             </TouchableOpacity>
           </View>
 
-          <View className="flex-row justify-center items-center gap-6 mb-2 mt-4">
-            <Text className=" text-center ">Username : {user?.username} </Text>
-            <Pressable onPress={editUsername}>
-              <Ionicons name='pencil' size={15}/>
+          <View className='flex-row w-full p-2 gap-2 items-center'>
+            <Ionicons className='px-3' name='person-outline' size={hp(3)} color="#737373"/>
+            <View className="px-2">
+              <Text className='text-neutral-500 text-start font-semibold text-base'>Username </Text>
+              <Text className='text-neutral-900 font-bold text-lg'>{user?.username} </Text>
+            </View>
+            <Pressable className='ml-auto px-3' onPress={editUsername}>
+              <Ionicons name='pencil' size={hp(3)} color="#10b981"/>
             </Pressable>
           </View>
-          
-          <Text className=" text-center mb-2">Email : {user?.email} </Text>
 
-          <TouchableOpacity className="bg-red-400 my-2 mx-6 py-3 rounded-xl w-40" onPress={handleLogout}>
-            <Text className="text-center">Logout </Text>
+          <View className='border-t-hairline border-neutral-300 w-96'></View>
+
+          <View className='flex-row w-full p-2 gap-2 items-center'>
+            <Ionicons className='px-3' name='mail-outline' size={hp(3)} color="#737373"/>
+            <View className="px-2">
+              <Text className='text-neutral-500 text-start font-semibold text-base'>Email </Text>
+              <Text className='text-neutral-900 font-bold text-lg'>{user?.email} </Text>
+            </View>
+          </View>
+
+
+          <TouchableOpacity className=" my-2 mt-6 mx-6 py-3 rounded-xl w-40 border-red-300 border-2" onPress={handleLogout}>
+            <Text className="text-center text-red-400">Logout </Text>
           </TouchableOpacity>
 
         </View>

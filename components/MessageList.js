@@ -5,11 +5,16 @@ export default function MessageList({messages, currentUser}){
     return (
         <ScrollView
             showVerticalScrollIndicator={false}
-            contentContainerStyle={{paddingTop:25}}
+            contentContainerStyle={{paddingTop:15}}
         >
             {
                 messages.map((message, index)=>{
-                    return(<MessageItem message={message} key={index} currentUser={currentUser}/>)
+                    return(
+                    <MessageItem 
+                        message={message} 
+                        key={index} 
+                        currentUser={currentUser} 
+                    />)
                 })
             }
         </ScrollView>

@@ -3,11 +3,12 @@ import { View,Text, SafeAreaView, TextInput, Button, KeyboardAvoidingView, Alert
 import MessageList from "../../components/MessageList";
 import { useEffect, useState,useRef } from "react";
 import { useAuth } from "../../Context/authContext";
-import { addDoc, collection, doc, onSnapshot, orderBy, query, setDoc, Timestamp } from "firebase/firestore";
+import { addDoc, collection, doc, onSnapshot, orderBy, query, setDoc, Timestamp,update } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ChatRoomHeader from "../../components/ChatRoomHeader";
 import { useRouter } from "expo-router";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 export default function ChatRoom(){
 
@@ -58,7 +59,9 @@ export default function ChatRoom(){
         let roomIds = getRoomId(user?.userId, item?.userId);
         await setDoc(doc(db,'rooms',roomIds),{
             roomIds,
-            createdAt: Timestamp.fromDate(new Date())
+            createdAt: Timestamp.fromDate(new Date()),
+            user1: user?.username,
+            user2: item?.username,
         })
     }
 
@@ -69,6 +72,7 @@ export default function ChatRoom(){
             let roomIds = getRoomId(user?.userId, item?.userId);
             const docRef = doc(db, 'rooms', roomIds);
             const messageRef = collection(docRef, 'messages');
+            const customMessageId = `${user?.userId}_${new Date().getTime()}`;
             textRef.current = "";
             if(inputRef){
                 inputRef?.current?.clear();
@@ -78,13 +82,14 @@ export default function ChatRoom(){
                 text: message,
                 senderName:user?.username,
                 createdAt: Timestamp.fromDate(new Date()),
+                seen : false ,
+                messageId: customMessageId,
             };
 
             if (Object.values(messageData).some(value => value === undefined)) {
                 throw new Error("One or more fields are undefined");
             }
-
-            const newDoc = await addDoc(messageRef, messageData);
+            await setDoc(doc(messageRef,customMessageId), messageData)
             setNewMessage(true);
         } catch (error) {
             Alert.alert("Message", error.message)
@@ -106,18 +111,18 @@ export default function ChatRoom(){
                         <MessageList messages={messages} currentUser={user} newMessage={newMessage}/>
                     </View>
                 </ScrollView>
-                <View className=" p-3 gap-3">
-                    <View className="bg-white rounded-full border-black border-2 flex-row justify-between items-center px-3 py-1">
+                <View className=" p-3 gap-3 flex-row items-center">
+                    <View className="bg-white rounded-3xl border-black border-hairline  px-3 py-1 min-h-16 justify-center" style={{width: wp(80)}}>
                         <TextInput
                         ref={inputRef}
                         placeholder="message... "
                         className="bg-white rounded-3xl text-lg font-semibold"
                         onChangeText={value => textRef.current = value}
                         />
-                        <Pressable className="bg-white rounded-full">
-                            <Ionicons name="send" size={30} color="#065f46" onPress={handleSent}/>
-                        </Pressable>
                     </View>
+                    <Pressable className=" m-2"  onPress={handleSent}>
+                        <Ionicons name="send" size={hp(4)} color="#065f46"/>
+                    </Pressable>
                 </View>
             </SafeAreaView>
         </KeyboardAvoidingView>
