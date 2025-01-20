@@ -3,8 +3,6 @@ import { useState, useRef } from "react";
 import { Text, View, SafeAreaView, TextInput, Pressable, Alert, ActivityIndicator,Image } from "react-native";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useAuth} from '../Context/authContext'
-import ChatList from "../components/ChatList";
-import Chat_Image from '../assets/images/Chat-cuate.png'
 import { Ionicons } from "@expo/vector-icons";
 import LImage from '../assets/images/Mobile login-amico.png'
 

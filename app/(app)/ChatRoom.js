@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { View,Text, SafeAreaView, TextInput, Button, KeyboardAvoidingView, Alert, ScrollView, Pressable, Keyboard } from "react-native";
+import { View,Text, SafeAreaView, TextInput, KeyboardAvoidingView, Alert, ScrollView, Pressable, Keyboard } from "react-native";
 import MessageList from "../../components/MessageList";
 import { useEffect, useState,useRef } from "react";
 import { useAuth } from "../../Context/authContext";
@@ -9,6 +9,20 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import ChatRoomHeader from "../../components/ChatRoomHeader";
 import { useRouter } from "expo-router";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import Constants from "expo-constants"; // Optional
+import {getRoomId} from '../../utils/common';
+
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
+
 
 export default function ChatRoom(){
 
@@ -20,12 +34,6 @@ export default function ChatRoom(){
     const inputRef = useRef(null);
     const router = useRouter();
     const scrollRef = useRef(null);
-
-    const getRoomId = (Id1, Id2)=>{
-        const sortedIds = [Id1, Id2].sort();
-        const roomId = sortedIds.join('-');
-        return roomId;
-    }
 
     useEffect(()=>{
         createRoomNot();
@@ -90,6 +98,16 @@ export default function ChatRoom(){
                 throw new Error("One or more fields are undefined");
             }
             await setDoc(doc(messageRef,customMessageId), messageData)
+
+            if(user?.username == messages[0].senderName){
+                console.log('same')
+            }
+            else
+            {
+                console.log('notsame')
+                schedulePushNotification(message);
+            }
+           
             setNewMessage(true);
         } catch (error) {
             Alert.alert("Message", error.message)
@@ -102,6 +120,19 @@ export default function ChatRoom(){
         },100)
     }
 
+
+  async function schedulePushNotification(v) {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: user?.username,
+        body: v,
+        data: { data: 'goes here' },
+        sound: 'default'
+      },
+      trigger: { seconds: 10 },
+    });
+  }
+
     return (
         <KeyboardAvoidingView className="flex-1" behavior="padding">
             <SafeAreaView className="flex-1  bg-emerald-100 justify-between">
@@ -111,7 +142,7 @@ export default function ChatRoom(){
                         <MessageList messages={messages} currentUser={user} newMessage={newMessage}/>
                     </View>
                 </ScrollView>
-                <View className=" p-3 gap-3 flex-row items-center">
+                <View className=" p-3 gap-3 flex-row items-center justify-center">
                     <View className="bg-white rounded-3xl border-black border-hairline  px-3 py-1 min-h-16 justify-center" style={{width: wp(80)}}>
                         <TextInput
                         ref={inputRef}
@@ -121,10 +152,54 @@ export default function ChatRoom(){
                         />
                     </View>
                     <Pressable className=" m-2"  onPress={handleSent}>
-                        <Ionicons name="send" size={hp(4)} color="#065f46"/>
+                        <Ionicons name="send" size={hp(4)} color="#059669"/>
                     </Pressable>
                 </View>
             </SafeAreaView>
         </KeyboardAvoidingView>
     )
 }
+
+
+export async function registerForPushNotificationsAsync() {
+    let token;
+  
+    if (Platform.OS === "android") {
+      await Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [250, 250, 250, 250],
+        lightColor: "#FF231F7C",
+      });
+    }
+  
+    if (Device.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification!");
+        return;
+      }
+      // Learn more about projectId:
+      // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
+  
+      if (Constants.easConfig?.projectId) {
+        token = (
+          await Notifications.getExpoPushTokenAsync({
+            projectId: Constants.easConfig.projectId, // you can hard code project id if you dont want to use expo Constants
+          })
+        ).data;
+        console.log(token);
+      }
+    } else {
+      alert("Must use physical device for Push Notifications");
+    }
+  
+    return token;
+  }
+

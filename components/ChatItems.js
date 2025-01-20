@@ -2,7 +2,7 @@ import {View, Text, TouchableOpacity, Image, Pressable, Modal, Alert} from 'reac
 import React, { useEffect,useState } from 'react'
 import { collection, doc, onSnapshot, orderBy, query,updateDoc ,getFirestore, getDoc, setDoc} from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { formatDate , currentDate} from '../utils/common';
+import { formatDate , currentDate,getRoomId} from '../utils/common';
 import { AdvancedImage, upload } from 'cloudinary-react-native';
 import { Cloudinary } from "@cloudinary/url-gen";
 
@@ -63,12 +63,6 @@ export default function ChatItems ({item, router, noBorder, currentUser, openIma
         }else{
             return 'Say Hello 👋';
         }
-    }
-
-    const getRoomId = (Id1, Id2)=>{
-        const sortedIds = [Id1, Id2].sort();
-        const roomId = sortedIds.join('-');
-        return roomId;
     }
 
     const [lastmessage, setLastMessage] = useState(undefined);

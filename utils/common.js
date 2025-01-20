@@ -17,6 +17,12 @@ export const currentDate = ()=>{
     return currentDate;
 }
 
+export const getRoomId = (Id1, Id2)=>{
+    const sortedIds = [Id1, Id2].sort();
+    const roomId = sortedIds.join('-');
+    return roomId;
+}
+
 
 //will work on future because of month last and first date logic
 // export const yesterdayDate = ()=>{

@@ -7,8 +7,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { Feather, Ionicons} from "@expo/vector-icons";
 import { AdvancedImage } from 'cloudinary-react-native';
 import { Cloudinary } from "@cloudinary/url-gen";
-import reg_image from '../assets/images/Mobile login-amico.png'
-import LottieView from "lottie-react-native";
 
 const cld = new Cloudinary({
   cloud: {
@@ -131,8 +129,6 @@ export default function Register() {
           </Pressable>
       </View>
 
-        {/* <TextInput className="bg-white border-hairline rounded-2xl p-3 m-2 text-lg" placeholder="Email" onChangeText={(value)=>emailRef.current = value} /> */}
-        {/* <TextInput className="bg-white border-hairline rounded-2xl p-3 m-2 text-lg" placeholder="Password" onChangeText={(value)=>passwordRef.current = value}/> */}
         {loading ? <ActivityIndicator size={hp(5)} className="py-3"/> : (
           <Pressable className="bg-emerald-500 m-2 p-4 rounded-2xl elevation-md">
             <Text className="text-center text-white text-lg" onPress={handleRegister}>Register</Text>
